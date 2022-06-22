@@ -2,6 +2,7 @@ const router = require("express").Router()
 const User = require("../models/userModel")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const verifyUser = require("../middleware/verifyUser")
 
 // Register User
 router.post("/register", async (req, res) => {
@@ -33,7 +34,7 @@ router.post("/register", async (req, res) => {
             { user_id: saved_user._id, email },
             process.env.TOKEN_KEY
         );
-        return res.status(200).json({ token,user: { name, email } })
+        return res.status(200).json({ token,user: { _id:saved_user._id, name, email } })
     } catch (err) {
         console.error(err)
         res.status(500).json({ message: "Internal Server Error" })
@@ -59,8 +60,20 @@ router.post("/login", async (req, res) => {
             { user_id: existing_user._id, email },
             process.env.TOKEN_KEY
         );
-        return res.status(200).json({ token,user: { name: existing_user.name, email: existing_user.email } })
+        return res.status(200).json({ token,user: {_id:existing_user._id,name: existing_user.name, email: existing_user.email } })
     } catch (error) {
+        console.error(err)
+        res.status(500).json({ message: "Internal Server Error" })
+    }
+})
+
+
+//Get all Users
+router.get("/getUsers/:id", verifyUser, async(req,res) => {
+    try {
+        const users = await User.find({_id:{$ne:req.params.id}}).select(["email","name","_id"])
+        return res.status(200).json(users)
+    } catch (err) {
         console.error(err)
         res.status(500).json({ message: "Internal Server Error" })
     }
