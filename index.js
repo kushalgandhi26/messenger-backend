@@ -18,3 +18,4 @@ mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopolo
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.use("/auth",require("./routers/userRouter"))
+app.use("/message",require("./routers/messageRouter"))
