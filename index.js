@@ -12,28 +12,34 @@ app.use(cors());
 
 const server = app.listen(process.env.PORT || 8000)
 
-mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-app.use("/auth",require("./routers/userRouter"))
-app.use("/message",require("./routers/messageRouter"))
+app.use("/auth", require("./routers/userRouter"))
+app.use("/message", require("./routers/messageRouter"))
 
 
 //Socket Programming
-const io = socket(server)
+const io = socket(server, {
+    cors: {
+        origin: "https://messanger26-backend.herokuapp.com",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+})
 
 global.onlineUsers = new Map()
 
-io.on("connection",(socket) => {
+io.on("connection", (socket) => {
     global.chatSocket = socket
-    socket.on("add-user",(userId) => {
-        onlineUsers.set(userId,socket.id)
+    socket.on("add-user", (userId) => {
+        onlineUsers.set(userId, socket.id)
     })
 
-    socket.on("send-msg",(data) => {
+    socket.on("send-msg", (data) => {
         const sendUserSocket = onlineUsers.get(data.to)
-        if(sendUserSocket){
-            socket.to(sendUserSocket).emit("msg-receive",data.message)
+        if (sendUserSocket) {
+            socket.to(sendUserSocket).emit("msg-receive", data.message)
         }
     })
 })
