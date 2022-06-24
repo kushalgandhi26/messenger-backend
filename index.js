@@ -22,7 +22,7 @@ app.use("/message", require("./routers/messageRouter"))
 //Socket Programming
 const io = socket(server, {
     cors: {
-        origin: "https://messanger26-backend.herokuapp.com",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"],
         credentials: true
     }
