@@ -17,4 +17,21 @@ router.post("/send",async (req,res) => {
     }
 })
 
+//get all messages
+router.post("/getmessages",async(req,res) => {
+    try {
+        const {from,to} = req.body
+        const messages = await Message.find({users:{$all:[from,to]}}).sort({updatedAt:1})
+        const projectMessages = messages.map((msg) => {
+            return{
+                fromSelf: msg.sender.toString() === from,
+                message: msg.message.text
+            }
+        })
+        res.status(200).json(projectMessages) 
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({message:"Bad request"})
+    }
+})
 module.exports = router
