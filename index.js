@@ -8,12 +8,9 @@ const app = express();
 dotenv.config();
 app.use(express.json());
 
-app.use(cors({
-    origin: [process.env.CLIENT_URL],
-    credentials: true,
-}));
+app.use(cors());
 
-const server = app.listen(process.env.PORT,() => console.log(`Server started at ${process.env.PORT}`))
+const server = app.listen(process.env.PORT || 8000)
 
 mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -23,12 +20,7 @@ app.use("/message",require("./routers/messageRouter"))
 
 
 //Socket Programming
-const io = socket(server,{
-    cors:{
-        origin: [process.env.CLIENT_URL],
-        credentials: true,
-    }
-})
+const io = socket(server)
 
 global.onlineUsers = new Map()
 
