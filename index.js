@@ -22,7 +22,7 @@ app.use("/message", require("./routers/messageRouter"))
 //Socket Programming
 const io = socket(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: process.env.CLIENT_URL,
         methods: ["GET", "POST"],
         credentials: true
     }
