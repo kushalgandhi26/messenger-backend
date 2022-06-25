@@ -9,7 +9,7 @@ router.post("/register", async (req, res) => {
     try {
         const { name, email, password } = req.body
         var regExpEmail = /([A-Z]|[a-z]|[^<>()\[\]\\\/.,;:\s@"]){4,}\@([A-Z]|[a-z]|[^<>()\[\]\\\/.,;:\s@"]){4,}\.(com|net)/;
-        var regExpPassword = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/;
+        // var regExpPassword = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/;
         if(!name || !email || !password){
             return res.status(400).json({ message: "Enter Required Fields" })
         }
@@ -19,8 +19,8 @@ router.post("/register", async (req, res) => {
         if(!regExpEmail.test(email)){
             return res.status(400).json({ message: "Inappropriate Email" })
         }
-        if(!regExpPassword.test(password)){
-            return res.status(400).json({ message: "Enter Strong Password" })
+        if(password.length < 6){
+            return res.status(400).json({ message: "Enter 6 characer long password" })
         }
         const existing_user = await User.findOne({ email })
         if (existing_user) {

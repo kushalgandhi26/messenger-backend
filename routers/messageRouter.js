@@ -1,8 +1,9 @@
 const router = require("express").Router()
 const Message = require("../models/messageModel")
+const verifyUser = require("../middleware/verifyUser")
 
 //Add message
-router.post("/send",async (req,res) => {
+router.post("/send", verifyUser, async (req,res) => {
     try {
         const {from,to,msg} = req.body
         const data = new Message({message:{text:msg},users:[from,to],sender:from})
@@ -18,7 +19,7 @@ router.post("/send",async (req,res) => {
 })
 
 //get all messages
-router.post("/getmessages",async(req,res) => {
+router.post("/getmessages", verifyUser, async(req,res) => {
     try {
         const {from,to} = req.body
         const messages = await Message.find({users:{$all:[from,to]}}).sort({updatedAt:1})
